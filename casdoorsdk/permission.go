@@ -44,14 +44,14 @@ type Permission struct {
 	State       string `xorm:"varchar(100)" json:"state"`
 }
 
-func GetPermissions() ([]*Permission, error) {
+func (c *Client) GetPermissions() ([]*Permission, error) {
 	queryMap := map[string]string{
-		"owner": authConfig.OrganizationName,
+		"owner": c.cfg.OrganizationName,
 	}
 
-	url := GetUrl("get-permissions", queryMap)
+	url := c.GetUrl("get-permissions", queryMap)
 
-	bytes, err := DoGetBytesRaw(url)
+	bytes, err := c.DoGetBytesRaw(url)
 	if err != nil {
 		return nil, err
 	}
@@ -64,14 +64,14 @@ func GetPermissions() ([]*Permission, error) {
 	return permissions, nil
 }
 
-func GetPermissionsByRole(name string) ([]*Permission, error) {
+func (c *Client) GetPermissionsByRole(name string) ([]*Permission, error) {
 	queryMap := map[string]string{
-		"id": fmt.Sprintf("%s/%s", authConfig.OrganizationName, name),
+		"id": fmt.Sprintf("%s/%s", c.cfg.OrganizationName, name),
 	}
 
-	url := GetUrl("get-permissions-by-role", queryMap)
+	url := c.GetUrl("get-permissions-by-role", queryMap)
 
-	bytes, err := DoGetBytes(url)
+	bytes, err := c.DoGetBytes(url)
 	if err != nil {
 		return nil, err
 	}
@@ -84,14 +84,14 @@ func GetPermissionsByRole(name string) ([]*Permission, error) {
 	return permissions, nil
 }
 
-func GetPaginationPermissions(p int, pageSize int, queryMap map[string]string) ([]*Permission, int, error) {
-	queryMap["owner"] = authConfig.OrganizationName
+func (c *Client) GetPaginationPermissions(p int, pageSize int, queryMap map[string]string) ([]*Permission, int, error) {
+	queryMap["owner"] = c.cfg.OrganizationName
 	queryMap["p"] = strconv.Itoa(p)
 	queryMap["pageSize"] = strconv.Itoa(pageSize)
 
-	url := GetUrl("get-permissions", queryMap)
+	url := c.GetUrl("get-permissions", queryMap)
 
-	response, err := DoGetResponse(url)
+	response, err := c.DoGetResponse(url)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -113,14 +113,14 @@ func GetPaginationPermissions(p int, pageSize int, queryMap map[string]string) (
 	return permissions, int(response.Data2.(float64)), nil
 }
 
-func GetPermission(name string) (*Permission, error) {
+func (c *Client) GetPermission(name string) (*Permission, error) {
 	queryMap := map[string]string{
-		"id": fmt.Sprintf("%s/%s", authConfig.OrganizationName, name),
+		"id": fmt.Sprintf("%s/%s", c.cfg.OrganizationName, name),
 	}
 
-	url := GetUrl("get-permission", queryMap)
+	url := c.GetUrl("get-permission", queryMap)
 
-	bytes, err := DoGetBytesRaw(url)
+	bytes, err := c.DoGetBytesRaw(url)
 	if err != nil {
 		return nil, err
 	}
@@ -133,22 +133,22 @@ func GetPermission(name string) (*Permission, error) {
 	return permission, nil
 }
 
-func UpdatePermission(permission *Permission) (bool, error) {
-	_, affected, err := modifyPermission("update-permission", permission, nil)
+func (c *Client) UpdatePermission(permission *Permission) (bool, error) {
+	_, affected, err := c.modifyPermission("update-permission", permission, nil)
 	return affected, err
 }
 
-func UpdatePermissionForColumns(permission *Permission, columns []string) (bool, error) {
-	_, affected, err := modifyPermission("update-permission", permission, columns)
+func (c *Client) UpdatePermissionForColumns(permission *Permission, columns []string) (bool, error) {
+	_, affected, err := c.modifyPermission("update-permission", permission, columns)
 	return affected, err
 }
 
-func AddPermission(permission *Permission) (bool, error) {
-	_, affected, err := modifyPermission("add-permission", permission, nil)
+func (c *Client) AddPermission(permission *Permission) (bool, error) {
+	_, affected, err := c.modifyPermission("add-permission", permission, nil)
 	return affected, err
 }
 
-func DeletePermission(permission *Permission) (bool, error) {
-	_, affected, err := modifyPermission("delete-permission", permission, nil)
+func (c *Client) DeletePermission(permission *Permission) (bool, error) {
+	_, affected, err := c.modifyPermission("delete-permission", permission, nil)
 	return affected, err
 }

@@ -76,7 +76,7 @@ type Application struct {
 	FormBackgroundUrl    string   `xorm:"varchar(200)" json:"formBackgroundUrl"`
 }
 
-func AddApplication(application *Application) (bool, error) {
+func (c *Client) AddApplication(application *Application) (bool, error) {
 	if application.Owner == "" {
 		application.Owner = "admin"
 	}
@@ -85,7 +85,7 @@ func AddApplication(application *Application) (bool, error) {
 		return false, err
 	}
 
-	resp, err := DoPost("add-application", nil, postBytes, false, false)
+	resp, err := c.DoPost("add-application", nil, postBytes, false, false)
 	if err != nil {
 		return false, err
 	}
@@ -93,7 +93,7 @@ func AddApplication(application *Application) (bool, error) {
 	return resp.Data == "Affected", nil
 }
 
-func DeleteApplication(name string) (bool, error) {
+func (c *Client) DeleteApplication(name string) (bool, error) {
 	application := Application{
 		Owner: "admin",
 		Name:  name,
@@ -103,7 +103,7 @@ func DeleteApplication(name string) (bool, error) {
 		return false, err
 	}
 
-	resp, err := DoPost("delete-application", nil, postBytes, false, false)
+	resp, err := c.DoPost("delete-application", nil, postBytes, false, false)
 	if err != nil {
 		return false, err
 	}

@@ -24,13 +24,13 @@ import (
 )
 
 // GetOAuthToken gets the pivotal and necessary secret to interact with the Casdoor server
-func GetOAuthToken(code string, state string) (*oauth2.Token, error) {
+func (c *Client)GetOAuthToken(code string, state string) (*oauth2.Token, error) {
 	config := oauth2.Config{
-		ClientID:     authConfig.ClientId,
-		ClientSecret: authConfig.ClientSecret,
+		ClientID:     c.cfg.ClientId,
+		ClientSecret: c.cfg.ClientSecret,
 		Endpoint: oauth2.Endpoint{
-			AuthURL:   fmt.Sprintf("%s/api/login/oauth/authorize", authConfig.Endpoint),
-			TokenURL:  fmt.Sprintf("%s/api/login/oauth/access_token", authConfig.Endpoint),
+			AuthURL:   fmt.Sprintf("%s/api/login/oauth/authorize", c.cfg.Endpoint),
+			TokenURL:  fmt.Sprintf("%s/api/login/oauth/access_token", c.cfg.Endpoint),
 			AuthStyle: oauth2.AuthStyleInParams,
 		},
 		// RedirectURL: redirectUri,
@@ -50,13 +50,13 @@ func GetOAuthToken(code string, state string) (*oauth2.Token, error) {
 }
 
 // RefreshOAuthToken refreshes the OAuth token
-func RefreshOAuthToken(refreshToken string) (*oauth2.Token, error) {
+func (c *Client)RefreshOAuthToken(refreshToken string) (*oauth2.Token, error) {
 	config := oauth2.Config{
-		ClientID:     authConfig.ClientId,
-		ClientSecret: authConfig.ClientSecret,
+		ClientID:     c.cfg.ClientId,
+		ClientSecret: c.cfg.ClientSecret,
 		Endpoint: oauth2.Endpoint{
-			AuthURL:   fmt.Sprintf("%s/api/login/oauth/authorize", authConfig.Endpoint),
-			TokenURL:  fmt.Sprintf("%s/api/login/oauth/refresh_token", authConfig.Endpoint),
+			AuthURL:   fmt.Sprintf("%s/api/login/oauth/authorize", c.cfg.Endpoint),
+			TokenURL:  fmt.Sprintf("%s/api/login/oauth/refresh_token", c.cfg.Endpoint),
 			AuthStyle: oauth2.AuthStyleInParams,
 		},
 		// RedirectURL: redirectUri,

@@ -38,17 +38,17 @@ type Resource struct {
 	Description string `xorm:"varchar(1000)" json:"description"`
 }
 
-func UploadResource(user string, tag string, parent string, fullFilePath string, fileBytes []byte) (string, string, error) {
+func (c *Client) UploadResource(user string, tag string, parent string, fullFilePath string, fileBytes []byte) (string, string, error) {
 	queryMap := map[string]string{
-		"owner":        authConfig.OrganizationName,
+		"owner":        c.cfg.OrganizationName,
 		"user":         user,
-		"application":  authConfig.ApplicationName,
+		"application":  c.cfg.ApplicationName,
 		"tag":          tag,
 		"parent":       parent,
 		"fullFilePath": fullFilePath,
 	}
 
-	resp, err := DoPost("upload-resource", queryMap, fileBytes, true, true)
+	resp, err := c.DoPost("upload-resource", queryMap, fileBytes, true, true)
 	if err != nil {
 		return "", "", err
 	}
@@ -62,11 +62,11 @@ func UploadResource(user string, tag string, parent string, fullFilePath string,
 	return fileUrl, name, nil
 }
 
-func UploadResourceEx(user string, tag string, parent string, fullFilePath string, fileBytes []byte, createdTime string, description string) (string, string, error) {
+func (c *Client) UploadResourceEx(user string, tag string, parent string, fullFilePath string, fileBytes []byte, createdTime string, description string) (string, string, error) {
 	queryMap := map[string]string{
-		"owner":        authConfig.OrganizationName,
+		"owner":        c.cfg.OrganizationName,
 		"user":         user,
-		"application":  authConfig.ApplicationName,
+		"application":  c.cfg.ApplicationName,
 		"tag":          tag,
 		"parent":       parent,
 		"fullFilePath": fullFilePath,
@@ -74,7 +74,7 @@ func UploadResourceEx(user string, tag string, parent string, fullFilePath strin
 		"description":  description,
 	}
 
-	resp, err := DoPost("upload-resource", queryMap, fileBytes, true, true)
+	resp, err := c.DoPost("upload-resource", queryMap, fileBytes, true, true)
 	if err != nil {
 		return "", "", err
 	}
@@ -88,9 +88,9 @@ func UploadResourceEx(user string, tag string, parent string, fullFilePath strin
 	return fileUrl, name, nil
 }
 
-func DeleteResource(name string) (bool, error) {
+func (c *Client) DeleteResource(name string) (bool, error) {
 	resource := Resource{
-		Owner: authConfig.OrganizationName,
+		Owner: c.cfg.OrganizationName,
 		Name:  name,
 	}
 	postBytes, err := json.Marshal(resource)
@@ -98,7 +98,7 @@ func DeleteResource(name string) (bool, error) {
 		return false, err
 	}
 
-	resp, err := DoPost("delete-resource", nil, postBytes, false, false)
+	resp, err := c.DoPost("delete-resource", nil, postBytes, false, false)
 	if err != nil {
 		return false, err
 	}

@@ -31,13 +31,13 @@ type PermissionRule struct {
 	Id    string `xorm:"varchar(100) index not null default ''" json:"id"`
 }
 
-func Enforce(permissionRule *PermissionRule) (bool, error) {
+func (c *Client) Enforce(permissionRule *PermissionRule) (bool, error) {
 	postBytes, err := json.Marshal(permissionRule)
 	if err != nil {
 		return false, err
 	}
 
-	bytes, err := doEnforce("enforce", postBytes)
+	bytes, err := c.doEnforce("enforce", postBytes)
 	if err != nil {
 		return false, err
 	}
@@ -52,13 +52,13 @@ func Enforce(permissionRule *PermissionRule) (bool, error) {
 	return allow, nil
 }
 
-func BatchEnforce(permissionRules []PermissionRule) ([]bool, error) {
+func (c *Client) BatchEnforce(permissionRules []PermissionRule) ([]bool, error) {
 	postBytes, err := json.Marshal(permissionRules)
 	if err != nil {
 		return nil, err
 	}
 
-	bytes, err := doEnforce("batch-enforce", postBytes)
+	bytes, err := c.doEnforce("batch-enforce", postBytes)
 	if err != nil {
 		return nil, err
 	}
@@ -73,9 +73,9 @@ func BatchEnforce(permissionRules []PermissionRule) ([]bool, error) {
 	return allow, nil
 }
 
-func doEnforce(action string, postBytes []byte) ([]byte, error) {
-	url := GetUrl(action, nil)
-	bytes, err := DoPostBytesRaw(url, "", bytes.NewBuffer(postBytes))
+func (c *Client) doEnforce(action string, postBytes []byte) ([]byte, error) {
+	url := c.GetUrl(action, nil)
+	bytes, err := c.DoPostBytesRaw(url, "", bytes.NewBuffer(postBytes))
 	if err != nil {
 		return nil, err
 	}

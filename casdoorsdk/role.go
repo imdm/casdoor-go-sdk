@@ -33,14 +33,14 @@ type Role struct {
 	IsEnabled bool     `json:"isEnabled"`
 }
 
-func GetRoles() ([]*Role, error) {
+func (c *Client) GetRoles() ([]*Role, error) {
 	queryMap := map[string]string{
-		"owner": authConfig.OrganizationName,
+		"owner": c.cfg.OrganizationName,
 	}
 
-	url := GetUrl("get-roles", queryMap)
+	url := c.GetUrl("get-roles", queryMap)
 
-	bytes, err := DoGetBytesRaw(url)
+	bytes, err := c.DoGetBytesRaw(url)
 	if err != nil {
 		return nil, err
 	}
@@ -53,14 +53,14 @@ func GetRoles() ([]*Role, error) {
 	return roles, nil
 }
 
-func GetPaginationRoles(p int, pageSize int, queryMap map[string]string) ([]*Role, int, error) {
-	queryMap["owner"] = authConfig.OrganizationName
+func (c *Client) GetPaginationRoles(p int, pageSize int, queryMap map[string]string) ([]*Role, int, error) {
+	queryMap["owner"] = c.cfg.OrganizationName
 	queryMap["p"] = strconv.Itoa(p)
 	queryMap["pageSize"] = strconv.Itoa(pageSize)
 
-	url := GetUrl("get-roles", queryMap)
+	url := c.GetUrl("get-roles", queryMap)
 
-	response, err := DoGetResponse(url)
+	response, err := c.DoGetResponse(url)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -78,14 +78,14 @@ func GetPaginationRoles(p int, pageSize int, queryMap map[string]string) ([]*Rol
 	return roles, int(response.Data2.(float64)), nil
 }
 
-func GetRole(name string) (*Role, error) {
+func (c *Client) GetRole(name string) (*Role, error) {
 	queryMap := map[string]string{
-		"id": fmt.Sprintf("%s/%s", authConfig.OrganizationName, name),
+		"id": fmt.Sprintf("%s/%s", c.cfg.OrganizationName, name),
 	}
 
-	url := GetUrl("get-role", queryMap)
+	url := c.GetUrl("get-role", queryMap)
 
-	bytes, err := DoGetBytesRaw(url)
+	bytes, err := c.DoGetBytesRaw(url)
 	if err != nil {
 		return nil, err
 	}
@@ -98,22 +98,22 @@ func GetRole(name string) (*Role, error) {
 	return role, nil
 }
 
-func UpdateRole(role *Role) (bool, error) {
-	_, affected, err := modifyRole("update-role", role, nil)
+func (c *Client) UpdateRole(role *Role) (bool, error) {
+	_, affected, err := c.modifyRole("update-role", role, nil)
 	return affected, err
 }
 
-func UpdateRoleForColumns(role *Role, columns []string) (bool, error) {
-	_, affected, err := modifyRole("update-role", role, columns)
+func (c *Client) UpdateRoleForColumns(role *Role, columns []string) (bool, error) {
+	_, affected, err := c.modifyRole("update-role", role, columns)
 	return affected, err
 }
 
-func AddRole(role *Role) (bool, error) {
-	_, affected, err := modifyRole("add-role", role, nil)
+func (c *Client) AddRole(role *Role) (bool, error) {
+	_, affected, err := c.modifyRole("add-role", role, nil)
 	return affected, err
 }
 
-func DeleteRole(role *Role) (bool, error) {
-	_, affected, err := modifyRole("delete-role", role, nil)
+func (c *Client) DeleteRole(role *Role) (bool, error) {
+	_, affected, err := c.modifyRole("delete-role", role, nil)
 	return affected, err
 }
